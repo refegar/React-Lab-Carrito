@@ -58,6 +58,7 @@ const Tabla = ({ productos, eliminarProducto, setProductoEditar }) => {
           <tbody>
             {
               // Short-circuit operator && se ejecuta si productos es true
+              
               productos.map((producto, idx) => (
                 <TablaFila
                   key={idx} // 1
