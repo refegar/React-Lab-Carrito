@@ -8,19 +8,51 @@ import NavBarContext from "../context/navBarContext";
 const Tabla = ({ productos, eliminarProducto, setProductoEditar }) => {
 
   const [modalProducto, setModalProducto] = useState(null);
-  const {setCantidadComprados,setProductoComprado} = useContext(NavBarContext)
+  const {getCompras} = useContext(NavBarContext)
   
+  const url = 'https://s0e9kpe3e9.execute-api.sa-east-1.amazonaws.com/data-carrito/'
+
+  const agregarProductoComprados = async (nuevoProducto) => {  // 6. 
+    console.log('Agregando el producto comprado al carrito...')
+
+    try{
+
+      const options = {
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({
+        id: Math.floor(Date.now() / 1000),
+        nombre: nuevoProducto.nombre,
+        categoria: nuevoProducto.categoria,
+        precio: nuevoProducto.precio,
+      })// convienrte en un obj de js en string
+      }
+      // hacer peticion crear un  producto
+     const respuesta = await fetch (url+'agregar-productos-comprados',options)
+     if(!respuesta.ok){
+      throw new Error('Ocurrio un error al crear el producto',respuesta.status)
+     }
+     const productoCreado = await respuesta.json()
+     console.log(productoCreado)
+    
+     getCompras()
+
+    }catch(error){
+console.error('Error agregar producto',error)
+    }
+   
+  }
 
   const agregarProductoAlCarrito = (producto) => {
     // 1. Recuperar el array de productos del localStorage o crear uno vacío si no existe.
-    let carrito = JSON.parse(localStorage.getItem('carritoCompras')) || [];
-  
+    // let carrito = JSON.parse(localStorage.getItem('carritoCompras')) || [];
     // 2. Agregar el nuevo producto al array de carrito.
-    carrito.push(producto);
-    setProductoComprado(carrito)
-    setCantidadComprados(Array.isArray(carrito) ? carrito.length : 0);
+    //carrito.push(producto);
+    //setProductoComprado(carrito)
+    agregarProductoComprados(producto)
+    //setCantidadComprados(Array.isArray(carrito) ? carrito.length : 0);
     // 3. Guardar el array actualizado en el localStorage.
-    localStorage.setItem('carritoCompras', JSON.stringify(carrito));
+    //localStorage.setItem('carritoCompras', JSON.stringify(carrito));
   
     // 4. Mostrar un mensaje de éxito (opcional).
     Swal.fire({
